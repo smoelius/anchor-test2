@@ -7,6 +7,7 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         environment: [ubuntu-latest, macos-latest]
 
@@ -34,7 +35,7 @@ jobs:
           # Install Anchor
           cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
 
-          # Make an Anchor project and test it
+          # Initialize an Anchor project and test it
           anchor init foo
           cd foo
           anchor test
