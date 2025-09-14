@@ -6,7 +6,11 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        environment: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.environment }}
 
     steps:
       - uses: actions/checkout@v5
@@ -17,8 +21,6 @@ jobs:
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           mkdir -p $HOME/.config/solana
-          file etc/rfc8032_test_vector.json
-          file $HOME/.config/solana
           cp etc/rfc8032_test_vector.json $HOME/.config/solana/id.json
           cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
           anchor init foo
