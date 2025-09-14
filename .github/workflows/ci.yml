@@ -12,7 +12,9 @@ jobs:
       - name: Test
         run: |
           set -x
-          curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash -x
+          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
           anchor init foo
           cd foo
           anchor test
