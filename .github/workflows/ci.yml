@@ -15,14 +15,26 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install Anchor prerequisites on Ubuntu
+        if: ${{ matrix.environment == 'ubuntu-latest' }}
+        run: sudo apt install libudev-dev
+
       - name: Test
         run: |
           set -x
+
+          # Install Solana
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+          # Make a key
           mkdir -p $HOME/.config/solana
           cp etc/rfc8032_test_vector.json $HOME/.config/solana/id.json
+
+          # Install Anchor
           cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
+
+          # Make an Anchor project and test it
           anchor init foo
           cd foo
           anchor test
