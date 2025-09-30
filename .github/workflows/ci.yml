@@ -24,6 +24,8 @@ jobs:
         run: |
           set -x
 
+          file ./a.sh
+
           # Install Solana
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
@@ -35,7 +37,4 @@ jobs:
           # Install Anchor
           cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
 
-          # Initialize an Anchor project and test it
-          anchor init foo
-          cd foo
-          anchor test
+          ./a.sh
