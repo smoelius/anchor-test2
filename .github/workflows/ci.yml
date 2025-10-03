@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test:
     strategy:
@@ -16,9 +19,24 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Install Anchor prerequisites on Ubuntu
         if: ${{ matrix.environment == 'ubuntu-latest' }}
         run: sudo apt install libudev-dev
+
+      - name: Install gnu-sed on MacOS
+        if: ${{ matrix.environment == 'macos-latest' }}
+        run: |
+          brew install coreutils gnu-sed llvm protobuf
+          echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> "$GITHUB_PATH"
 
       - name: Test
         run: |
@@ -35,6 +53,8 @@ jobs:
           cp etc/rfc8032_test_vector.json $HOME/.config/solana/id.json
 
           # Install Anchor
-          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
+          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli || true
+
+          rm -f foo/target/deploy/foo-keypair.json
 
           ./a.sh
