@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test:
     strategy:
@@ -15,6 +18,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install Anchor prerequisites on Ubuntu
         if: ${{ matrix.environment == 'ubuntu-latest' }}
@@ -41,6 +53,19 @@ jobs:
           cp etc/rfc8032_test_vector.json $HOME/.config/solana/id.json
 
           # Install Anchor
-          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli
+          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli || true
 
           ./a.sh
+
+      # https://github.com/actions/cache/tree/main/save#always-save-cache
+      - uses: actions/cache/save@v4
+        # smoelius: Update the cache regardless of whether a cache hit occurred, in case further
+        # progress was made.
+        if: always() # && steps.cache-restore.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
