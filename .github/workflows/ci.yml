@@ -55,7 +55,15 @@ jobs:
           # Install Anchor
           cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli || true
 
-          ./a.sh
+          cd foo
+
+          yarn
+
+          ../anchor-test-hack.sh foo
+
+          ls -l test-ledger
+
+          cat test-ledger/validator-*.log | grep DEBUG
 
       # https://github.com/actions/cache/tree/main/save#always-save-cache
       - uses: actions/cache/save@v4
