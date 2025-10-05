@@ -4,29 +4,31 @@ set -xe
 
 which solana-test-validator
 
+cd foo
+
+yarn
+
 rm -rf test-ledger
 
-rm -f foo/target/deploy/foo-keypair.json
+rm -f target/deploy/foo-keypair.json
 
-pushd foo && yarn && anchor keys sync && anchor build && popd
+anchor keys sync
 
-PUBKEY="$(solana-keygen pubkey foo/target/deploy/foo-keypair.json)"
+anchor build
+
+PUBKEY="$(solana-keygen pubkey target/deploy/foo-keypair.json)"
 
 RUST_LOG=debug "solana-test-validator" \
     "--ledger" \
     "test-ledger" \
     "--bpf-program" \
     "$PUBKEY" \
-    "foo/target/deploy/foo.so" &
-
-pushd foo
+    "target/deploy/foo.so" &
 
 anchor test --skip-deploy --skip-local-validator || true
 
 kill %%
 
-ls -l ../test-ledger
+ls -l test-ledger
 
-cat ../test-ledger/validator-*.log | grep DEBUG
-
-popd
+cat test-ledger/validator-*.log | grep DEBUG
