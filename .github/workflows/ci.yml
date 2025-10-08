@@ -59,7 +59,8 @@ jobs:
 
           yarn
 
-          ../anchor-test-hack.sh foo
+          # ../anchor-test-hack.sh foo
+          RUST_LOG=debug anchor test
 
           ls -l test-ledger
 
