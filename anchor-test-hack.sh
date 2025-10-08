@@ -9,13 +9,9 @@ fi
 
 PROGRAM="$1"
 
-rm -f "target/deploy/$PROGRAM-keypair.json"
-
-anchor keys sync
+PUBKEY="$(grep "^$PROGRAM = \"[^\"]*\"$" Anchor.toml | grep -o '\"[^"]*\"' | grep -o '[^"]*')"
 
 anchor build
-
-PUBKEY="$(solana-keygen pubkey "target/deploy/$PROGRAM-keypair.json")"
 
 rm -rf test-ledger
 
