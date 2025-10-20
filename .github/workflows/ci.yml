@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         environment: [ubuntu-latest, macos-latest]
+        enable_logging: [true, false]
 
     runs-on: ${{ matrix.environment }}
 
@@ -58,6 +59,8 @@ jobs:
           cd foo
 
           yarn
+
+          export RUST_LOG="$(${{ matrix.enable_logging }} && echo -n debug)"
 
           ../anchor-test-hack.sh foo
 
