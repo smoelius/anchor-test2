@@ -53,7 +53,7 @@ jobs:
           cp etc/rfc8032_test_vector.json $HOME/.config/solana/id.json
 
           # Install Anchor
-          cargo install --git https://github.com/solana-foundation/anchor --tag v0.31.1 anchor-cli || true
+          cargo install --git https://github.com/solana-foundation/anchor --tag v0.32.1 anchor-cli || true
 
           cd foo
 
