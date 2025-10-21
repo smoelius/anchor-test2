@@ -22,6 +22,11 @@ RUST_LOG=debug "solana-test-validator" \
     "$PUBKEY" \
     "target/deploy/$PROGRAM.so" &
 
-anchor test --skip-deploy --skip-local-validator || true
+set +e
+anchor test --skip-deploy --skip-local-validator
+STATUS=$?
+set -e
 
 kill %%
+
+exit "$STATUS"
