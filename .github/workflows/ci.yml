@@ -67,9 +67,9 @@ jobs:
           else
             anchor test
 
-            ls -l ~/.anchor/test-ledger
+            ls -l .anchor/test-ledger
 
-            cat ~/.anchor/test-ledger/validator-*.log | grep DEBUG
+            cat .anchor/test-ledger/validator-*.log | grep DEBUG
           fi
         env:
           SKIP_PREFLIGHT: ${{ matrix.skip-preflight }}
