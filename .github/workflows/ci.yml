@@ -13,7 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         environment: [ubuntu-latest, macos-latest]
-        enable_logging: [true, false]
+        enable-logging: [true, false]
+        use-script: [true, false]
+        skip-preflight: [true, false]
 
     runs-on: ${{ matrix.environment }}
 
@@ -33,17 +35,9 @@ jobs:
         if: ${{ matrix.environment == 'ubuntu-latest' }}
         run: sudo apt update && sudo apt install libudev-dev
 
-      # - name: Install gnu-sed on MacOS
-      #   if: ${{ matrix.environment == 'macos-latest' }}
-      #   run: |
-      #     brew install coreutils gnu-sed llvm protobuf
-      #     echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> "$GITHUB_PATH"
-
       - name: Test
         run: |
           set -x
-
-          file ./a.sh
 
           # Install Solana
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
@@ -60,13 +54,25 @@ jobs:
 
           yarn
 
-          export RUST_LOG="$(${{ matrix.enable_logging }} && echo -n debug)"
+          if ${{ matrix.enable-logging }}; then
+            export RUST_LOG=debug
+          fi
 
-          ../anchor-test-hack.sh foo
+          if ${{ matrix.use-script }}; then
+            ../anchor-test-hack.sh foo
 
-          ls -l test-ledger
+            ls -l test-ledger
 
-          cat test-ledger/validator-*.log | grep DEBUG
+            cat test-ledger/validator-*.log | grep DEBUG
+          else
+            anchor test
+
+            ls -l ~/.anchor/test-ledger
+
+            cat ~/.anchor/test-ledger/validator-*.log | grep DEBUG
+          fi
+        env:
+          SKIP_PREFLIGHT: ${{ matrix.skip-preflight }}
 
       # https://github.com/actions/cache/tree/main/save#always-save-cache
       - uses: actions/cache/save@v4

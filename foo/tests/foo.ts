@@ -11,7 +11,7 @@ describe("foo", () => {
   it("Is initialized!", async () => {
     // Add your test here.
     const tx = await program.methods.initialize().rpc({
-      skipPreflight: true
+      skipPreflight: process.env.SKIP_PREFLIGHT === "true"
     });
     console.log("Your transaction signature", tx);
   });
